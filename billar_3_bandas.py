@@ -86,6 +86,13 @@ class Taco:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.angulo = 0
+
+    def girar(self, direccion):
+        if direccion == "izquierda":
+            self.angulo += math.pi / 4
+        elif direccion == "derecha":
+            self.angulo -= math.pi / 4
 
     def golpear_bola(self, bola, cursor_x, cursor_y):
         diff_x = cursor_x - self.x
@@ -129,9 +136,13 @@ def dibujar_mesa():
                     distancia = math.sqrt((evento.pos[0] - bola.x) ** 2 + (evento.pos[1] - bola.y) ** 2)
                     if distancia <= 10:
                         bola_seleccionada = bola
-
             elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:  # Botón izquierdo del mouse liberado
                 bola_seleccionada = None
+            elif evento.type == pygame.KEYDOWN:  # Tecla presionada
+                if evento.key == pygame.K_LEFT:  # Flecha izquierda
+                    taco.girar("izquierda")
+                elif evento.key == pygame.K_RIGHT:  # Flecha derecha
+                    taco.girar("derecha")
 
         pantalla.fill(BLANCO)
 
@@ -156,6 +167,9 @@ def dibujar_mesa():
 
         # Dibujar el taco
         pygame.draw.line(pantalla, BLANCO, (taco.x, taco.y), (cursor_x, cursor_y), 2)
+        punta_x = taco.x + math.cos(taco.angulo) * 50
+        punta_y = taco.y - math.sin(taco.angulo) * 50
+        pygame.draw.circle(pantalla, BLANCO, (int(punta_x), int(punta_y)), 5)
 
         # Control del taco y golpear las bolas
         if pygame.mouse.get_pressed()[0] and bola_seleccionada is not None:  # Botón izquierdo del mouse presionado y hay una bola seleccionada
